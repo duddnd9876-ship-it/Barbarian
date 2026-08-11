@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello Score</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  #score {
+    font-size: 4rem;
+    font-weight: 700;
+  }
+  button {
+    font-size: 1.5rem;
+    padding: 16px 48px;
+    border: none;
+    border-radius: 12px;
+    background: #6366f1;
+    color: white;
+    cursor: pointer;
+  }
+  button:active {
+    background: #4f46e5;
+  }
+</style>
+</head>
+<body>
+  <div id="score">Score: 0</div>
+  <button id="hello-btn">Hello</button>
+
+  <script>
+    let score = 0;
+    const scoreEl = document.getElementById('score');
+    document.getElementById('hello-btn').addEventListener('click', () => {
+      score += 1;
+      scoreEl.textContent = `Score: ${score}`;
+    });
+  </script>
+</body>
+</html>
