@@ -3,6 +3,7 @@ import { MAX_PLAYERS, MIN_PLAYERS, PLAYER_COLORS, TURN_SECONDS } from '../src/sh
 import { applyCommand, createGame } from '../src/shared/reducer'
 import { hashStringToSeed } from '../src/shared/rng'
 import type { Command, GameEvent, GameState, GameStatus, PlayerId } from '../src/shared/types'
+import { applyFogOfWar, computeVisibleHexes, isEventVisibleTo } from '../src/shared/view'
 import { parseClientMessage, type PublicSeat, type ServerMessage } from './protocol'
 
 interface SeatInfo {
@@ -78,7 +79,7 @@ export class GameRoom extends DurableObject<Env> {
       status: this.meta.status,
     })
     if (this.game) {
-      this.sendTo(server, { type: 'SNAPSHOT', state: this.game, turnDeadline: this.turnDeadline })
+      this.sendTo(server, { type: 'SNAPSHOT', state: this.viewFor(joined.seat.id), turnDeadline: this.turnDeadline })
     }
 
     return new Response(null, { status: 101, webSocket: pair[0] })
@@ -230,10 +231,37 @@ export class GameRoom extends DurableObject<Env> {
     })
   }
 
+  /** 시야 안 밖을 가리지 않는 "진짜" 상태를 아는 사람인지 — 관전(탈락)이거나 게임이 끝났으면 안개를 걷는다. */
+  private canSeeEverything(playerId: PlayerId, game: GameState): boolean {
+    return game.status !== 'playing' || game.eliminated.includes(playerId)
+  }
+
+  private viewFor(playerId: PlayerId): GameState {
+    const game = this.game!
+    if (this.canSeeEverything(playerId, game)) return game
+    return applyFogOfWar(game, playerId)
+  }
+
   private broadcastSnapshot(events: GameEvent[]): void {
     if (!this.game) return
-    this.broadcast({ type: 'SNAPSHOT', state: this.game, turnDeadline: this.turnDeadline })
-    if (events.length > 0) this.broadcast({ type: 'EVENTS', events })
+    const game = this.game
+
+    for (const ws of this.ctx.getWebSockets()) {
+      const attachment = ws.deserializeAttachment() as WsAttachment | null
+      if (!attachment) continue
+      const viewerId = attachment.playerId
+
+      if (this.canSeeEverything(viewerId, game)) {
+        this.sendTo(ws, { type: 'SNAPSHOT', state: game, turnDeadline: this.turnDeadline })
+        if (events.length > 0) this.sendTo(ws, { type: 'EVENTS', events })
+        continue
+      }
+
+      const visible = computeVisibleHexes(game, viewerId)
+      this.sendTo(ws, { type: 'SNAPSHOT', state: applyFogOfWar(game, viewerId, visible), turnDeadline: this.turnDeadline })
+      const visibleEvents = events.filter((e) => isEventVisibleTo(e, viewerId, game, visible))
+      if (visibleEvents.length > 0) this.sendTo(ws, { type: 'EVENTS', events: visibleEvents })
+    }
   }
 
   private broadcast(message: ServerMessage): void {
