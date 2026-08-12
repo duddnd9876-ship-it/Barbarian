@@ -4,6 +4,8 @@
 
 ## 현재 상태
 
+플레이: **https://hex-claim.duddnd9876.workers.dev**
+
 프론트엔드(React SPA)와 백엔드(권위 서버)를 모두 **Cloudflare Workers** 하나로 배포한다.
 
 - **로컬 핫싯**: 같은 화면에서 2~6인이 순서대로 턴을 넘겨가며 플레이. 서버 없이 브라우저에서만 동작.
