@@ -25,3 +25,9 @@ export const ROUGH_RATIO = 0.25
 
 export const MIN_DAMAGE = 10
 export const MAX_DAMAGE = 100
+
+export const MIN_PLAYERS = 2
+export const MAX_PLAYERS = 6
+
+/** 좌석 순서대로 배정되는 플레이어 색상. 로컬 핫싯 클라이언트와 온라인 서버(GameRoom)가 공유한다. */
+export const PLAYER_COLORS = ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4'] as const

@@ -68,6 +68,84 @@ body {
   line-height: 1.5;
 }
 
+.lobby-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.lobby-tab {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #11131a;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.lobby-tab--active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.online-join-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.online-join-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #11131a;
+  color: var(--text);
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.online-join-row button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #262a31;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.online-join-row button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.room-code-display {
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+
+.spectate-notice {
+  color: var(--muted);
+}
+
+.leave-button {
+  width: 100%;
+  margin-top: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.leave-button:hover {
+  background: #262a31;
+}
+
 .lobby-field {
   display: flex;
   flex-direction: column;

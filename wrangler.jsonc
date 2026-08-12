@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hex-claim",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-08-11",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // 클라이언트(Vite 빌드 결과물)를 정적 자산으로 서빙한다.
+  // /api/*, /ws/* 는 Worker가 먼저 처리하고, 그 외 요청은 SPA로 서빙된다.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/ws/*"]
+  },
+
+  // 방 하나 = GameRoom Durable Object 하나. 권위 서버 역할.
+  "durable_objects": {
+    "bindings": [{ "name": "GAME_ROOM", "class_name": "GameRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["GameRoom"] }],
+
+  "observability": {
+    "enabled": true
+  }
+}
